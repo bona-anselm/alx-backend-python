@@ -1,0 +1,3 @@
+# Python - Variable Annotations
+
+To be updated...
