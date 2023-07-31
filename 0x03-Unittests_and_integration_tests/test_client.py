@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ Defines the TestGithubOrgClient class """
 import unittest
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, MagicMock, PropertyMock, patch
 from typing import Dict
 import client
 from parameterized import parameterized
@@ -30,3 +30,17 @@ class TestGithubOrgClient(unittest.TestCase):
         mocked_fn.assert_called_once_with(
                 "https://api.github.com/orgs/{}".format(org)
                 )
+
+    def test_public_repos_url(self) -> None:
+        """ Tests that _public_repos_url produces expected result """
+        with patch(
+                "client.GithubOrgClient.org",
+                new_callable=PropertyMock,
+                ) as mock_payload:
+            mock_payload.return_value = {
+                'repos_url': "https://api.github.com/users/google/repos"
+            }
+            self.assertEqual(
+                client.GithubOrgClient("google")._public_repos_url,
+                "https://api.github.com/users/google/repos",
+            )
