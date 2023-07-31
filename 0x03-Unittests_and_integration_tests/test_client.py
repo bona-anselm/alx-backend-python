@@ -47,7 +47,7 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @patch("client.get_json")
     def test_public_repos(self, mock_get_json: MagicMock) -> None:
-        """Tests the `public_repos` method."""
+        """ Tests that public_repos prodcues expected result """
         test_payload = {
             'repos_url': "https://api.github.com/users/google/repos",
             'repos': [
@@ -100,3 +100,17 @@ class TestGithubOrgClient(unittest.TestCase):
             )
             mocked_public_repos.assert_called_once()
         mock_get_json.assert_called_once()
+
+    @parameterized.expand([
+        ({'license': {'key': "bsd-3-clause"}}, "bsd-3-clause", True),
+        ({'license': {'key': "bsl-1.0"}}, "bsd-3-clause", False),
+    ])
+    def test_has_license(self,
+                         repo: Dict,
+                         key: str,
+                         expected: bool
+                         ) -> None:
+        """ Tests that has_license produces expected result """
+        client_org = client.GithubOrgClient("google")
+        client_licence = client_org.has_license(repo, key)
+        self.assertEqual(client_licence, expected)
